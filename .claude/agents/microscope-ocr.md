@@ -67,8 +67,27 @@ final response so the table can be extended.
 ## Aberration corrector screenshots
 
 Screenshots from the aberration correction software (CEOS-style) show a
-table with one row per aberration coefficient (C1, A1, A2, B2, C3, A3, S3,
-A4, D4, B4, C5, A5, ...) and three columns: `Value`, `Angle`, `Confidence`.
+table with one row per aberration coefficient and three columns: `Value`,
+`Angle`, `Confidence`. **The number and identity of rows varies by
+measurement type/tableau.** Three standard measurement types are used,
+each with its own expected coefficient set:
+
+| Measurement type | Expected coefficients (rows) |
+|---|---|
+| Fast | C1, A1, A2, B2 |
+| Standard | C1, A1, A2, B2, C3, A3, S3, A4 |
+| Enhanced | C1, A1, A2, B2, C3, A3, S3, A4, D4, B4, C5, A5 |
+
+These three sets are the common cases, not a hard constraint — a given
+screenshot could still show a different row count (e.g. a partial or
+custom measurement). Never assume a fixed row count or a fixed set of
+coefficients from this table alone; always read whatever rows are
+actually visible in the given screenshot, and report exactly that set,
+nothing more. If you know which measurement type was run, you can use the
+table above as a quick sanity check (e.g. a "Fast" measurement should show
+4 rows) — but trust what's actually in the image over the expected set if
+they disagree, and mention the mismatch rather than silently reconciling
+it.
 
 **Only OCR the `Confidence` column.** `Value` and `Angle` for each
 coefficient are already available through the aberration-correction API
@@ -77,11 +96,12 @@ re-derive them from a screenshot when a clean API value already exists.
 `Confidence` (the fit quality of the measurement, not exposed by the API)
 is the one piece of information this screenshot actually needs to supply.
 
-When asked for confidence values, prompt the tool for exactly that column,
-row by row (e.g. "Read the Confidence column value for each aberration row
-in this table: C1, A1, A2, B2, C3, ... Report as a table of coefficient
-name to confidence value with units."). Units vary per row (pm, nm, or µm)
-depending on the coefficient's magnitude — same auto-scaling display
+When asked for confidence values, prompt the tool for exactly that column
+without naming specific coefficients up front (e.g. "Read the Confidence
+column value for every aberration row visible in this table. Report as a
+table of coefficient name to confidence value with units, including only
+the rows actually present in the image."). Units vary per row (pm, nm, or
+µm) depending on the coefficient's magnitude — same auto-scaling display
 behavior as Defocus above; report the unit as shown, don't normalize it
 yourself.
 
