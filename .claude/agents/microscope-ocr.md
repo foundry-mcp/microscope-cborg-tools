@@ -63,3 +63,31 @@ ask the tool with a general prompt first ("list every labeled field
 visible on screen") to discover the actual on-screen wording, then narrow
 down. If you learn a new field's label/units this way, mention it in your
 final response so the table can be extended.
+
+## Aberration corrector screenshots
+
+Screenshots from the aberration correction software (CEOS-style) show a
+table with one row per aberration coefficient (C1, A1, A2, B2, C3, A3, S3,
+A4, D4, B4, C5, A5, ...) and three columns: `Value`, `Angle`, `Confidence`.
+
+**Only OCR the `Confidence` column.** `Value` and `Angle` for each
+coefficient are already available through the aberration-correction API
+(e.g. `acquire_ceos_tableau` in the instrument-control MCP server) — don't
+re-derive them from a screenshot when a clean API value already exists.
+`Confidence` (the fit quality of the measurement, not exposed by the API)
+is the one piece of information this screenshot actually needs to supply.
+
+When asked for confidence values, prompt the tool for exactly that column,
+row by row (e.g. "Read the Confidence column value for each aberration row
+in this table: C1, A1, A2, B2, C3, ... Report as a table of coefficient
+name to confidence value with units."). Units vary per row (pm, nm, or µm)
+depending on the coefficient's magnitude — same auto-scaling display
+behavior as Defocus above; report the unit as shown, don't normalize it
+yourself.
+
+There's no tight plausibility bound for these — observed confidence values
+have spanned roughly 10 pm to 940 nm to 436 µm in a single reading, a huge
+dynamic range across coefficients. The only sanity check worth applying is
+that a confidence value should be positive and non-zero; treat a zero,
+negative, or missing confidence for a row as a suspect read worth retrying
+rather than a real result.
