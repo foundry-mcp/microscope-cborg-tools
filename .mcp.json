@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "cborg-ocr": {
+      "command": ".venv/bin/python",
+      "args": ["cborg_ocr_server.py"],
+      "env": {
+        "CBORG_API_KEY": "${CBORG_API_KEY}"
+      }
+    },
+    "cborg-vision": {
+      "command": ".venv/bin/python",
+      "args": ["cborg_vision_server.py"],
+      "env": {
+        "CBORG_API_KEY": "${CBORG_API_KEY}"
+      }
+    }
+  }
+}

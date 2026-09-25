@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Test/sample data — not part of the tool code
+*.png
+*.jpg
+*.jpeg
+*.ser
+*.emd
+*.dm3
+*.dm4
+
+# Secrets
+.env
+.claude/settings.local.json
