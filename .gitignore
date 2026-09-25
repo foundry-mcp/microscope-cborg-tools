@@ -11,6 +11,11 @@ __pycache__/
 *.dm3
 *.dm4
 
+# Exception: curated OCR test images live in test-data/ and are tracked
+!test-data/
+!test-data/*.png
+!test-data/*.jpg
+
 # Secrets
 .env
 .claude/settings.local.json
