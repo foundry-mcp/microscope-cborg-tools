@@ -28,6 +28,13 @@ mcp = MCPServer("cborg-vision")
 MODEL = "lbl/cborg-vision"
 TARGET_SIZE = 256
 
+# Below this intensity standard deviation, an image is almost certainly a
+# blank/no-beam acquisition (pure detector noise) rather than real signal.
+# Observed noise floor (beam off) has std ~17; real sample images seen so
+# far have std in the thousands. 100 leaves comfortable margin on both
+# sides without being anywhere near real signal levels.
+NOISE_STD_THRESHOLD = 100.0
+
 
 def looks_valid(text: str | None) -> bool:
     """Cheap sanity check: non-empty and not an obvious refusal/error."""
@@ -119,6 +126,17 @@ def describe_microscope_image(
         return f"Error loading image data: {exc}"
 
     image = loaded["data"]
+
+    std = float(np.std(image))
+    if std < NOISE_STD_THRESHOLD:
+        return (
+            f"This image looks like a blank/no-beam acquisition (intensity "
+            f"std={std:.1f}, below the noise threshold of "
+            f"{NOISE_STD_THRESHOLD:.0f}), not a real sample image. Skipping "
+            f"the vision model call. If the beam was on and a real feature "
+            f"was expected, re-acquire the image."
+        )
+
     pixel_size = loaded.get("pixelSize") or [1.0, 1.0]
     pixel_unit = loaded.get("pixelUnit") or ["px", "px"]
     # Last two dims are (y, x) per ncempy convention.
